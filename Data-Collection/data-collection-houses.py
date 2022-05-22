@@ -1,7 +1,6 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 
 # Получение ссылки
 location = input('Введите субъект федерации (транслитом) ') # субект федерации
@@ -9,11 +8,11 @@ city = input('Введите город (транслитом) ') # город
 url = 'https://dom.mingkh.ru/'+location+'/'+city+'/houses'
 print(url)
 
-f = open('houses.csv', 'w')
+f = open('Houses.csv', 'w')
 
 def scrapData(url):
     global f
-    request = requests.get(url, headers={'User-Agent': UserAgent().chrome})
+    request = requests.get(url)
     soup = BeautifulSoup(request.text)
     table = soup.find('table')
     output_rows = []
