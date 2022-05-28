@@ -5,6 +5,9 @@ files = {'supermarket': open('Supermarkets.csv', 'w'), 'industrial': open('Work.
 	'office': open('Work.csv', 'w'), 'hospital': open('Medecine.csv', 'w'), 'clinic': open('Medecine.csv', 'w'),
 	'school': open('Education.csv', 'w'), 'university': open('Education.csv', 'w'), 'kindergarten' : open('Education.csv', 'w')}
 
+for key in files:
+	files[key].write('Название;Широта;Долгота\n')
+
 def parseBuilding(node, file):
 	global files
 	row = {'name' : '[empty]', 'lat' : node.attrib['lat'], 'lon' : node.attrib['lon']}
@@ -12,7 +15,7 @@ def parseBuilding(node, file):
 		if tag.attrib['k'] == 'name':
 			row['name'] = tag.attrib['v']
 			break
-	files[file].write(row['name']+';'+row['lat']+';'+row['lon']+'\n')
+	files[file].write(';'.join([row['name'], row['lat'], row['lon']]))
 
 
 
@@ -33,3 +36,6 @@ for node in data.iter('node'):
 
 for key in files:
 	files[key].close()
+
+print('Данные успешно загружены')
+input()

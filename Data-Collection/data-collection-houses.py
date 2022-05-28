@@ -11,6 +11,7 @@ loc = Nominatim(user_agent="GetLoc")
 print(url)
 
 f = open('Houses.csv', 'w')
+f.write('Широта;Долгота;Площадь;Этажность\n')
 
 def convertAdrToCoord(street):
     global loc
@@ -33,7 +34,7 @@ def scrapData(url):
     for table_row in table.findAll('tr'):
         columns = table_row.findAll('td')
         output_row = []
-        for i in range(1, len(columns)):
+        for i in range(len(columns)):
             if i == 2: #3-я колонка на сайте - адресс
                 coord = convertAdrToCoord(columns[i].text)
                 if (coord != -1): #если есть координаты
@@ -44,6 +45,8 @@ def scrapData(url):
             else:
                 output_row.append(columns[i].text)
         if not '—' in output_row and output_row != []: #если в строке пропуск, то она повреждена
+            output_row = output_row[2:] #удаляем колонку с городом и индексом
+            del(output_row[-2]) #удаляем лишнюю колонку (в ней находится год постройки)
             for t in output_row:
                 f.write(str(t)+';')
             f.write('\n')
