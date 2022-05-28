@@ -16,6 +16,7 @@ def parseBuilding(node, file):
 			row['name'] = tag.attrib['v']
 			break
 	files[file].write(';'.join([row['name'], row['lat'], row['lon']]))
+	files[file].write('\n')
 
 
 
