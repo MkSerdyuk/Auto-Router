@@ -8,8 +8,6 @@ location = input('Введите субъект федерации (трансл
 city = input('Введите город (транслитом) ') # город
 url = 'https://dom.mingkh.ru/'+location+'/'+city+'/houses'
 loc = Nominatim(user_agent="GetLoc")
-print(url)
-
 f = open('Houses.csv', 'w')
 f.write('Широта;Долгота;Население\n')
 
@@ -38,7 +36,7 @@ def scrapData(url):
         columns = table_row.findAll('td')
         row = {'lat' : 0, 'lon' : 0, 'pop' : 0}
         try:
-            coord = convertAdrToCoord(columns[2].text)
+            coord = convertAdrToCoord(columns[1].text + ', ' + columns[2].text)
             row['lat'] = str(coord[0])
             row['lon'] = str(coord[1])
             row['pop'] = str(getPopulation(float(columns[-3].text), float(columns[-1].text)))
@@ -53,7 +51,7 @@ def scrapData(url):
 
 try:
     scrapData(url) #собираем данные с первой страницы
-    print('Страница',1,'загружена')
+    print('Страница 1 загружена')
 
     i = 2 #номер страницы
     pUrl = url + '?page=' + str(i) #получаем ссылку на страницу
@@ -67,4 +65,3 @@ except Exception as e:
 
 f.close()
 print('Данные успешно загружены')
-input()
