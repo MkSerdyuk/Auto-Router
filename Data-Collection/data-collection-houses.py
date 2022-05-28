@@ -11,7 +11,10 @@ loc = Nominatim(user_agent="GetLoc")
 print(url)
 
 f = open('Houses.csv', 'w')
-f.write('Широта;Долгота;Площадь;Этажность\n')
+f.write('Широта;Долгота;Население\n')
+
+def getPopulation(scale, stages):
+    return scale*stages/18 #18 кв. м - норма площади на одного человека в РФ
 
 def convertAdrToCoord(street):
     global loc
@@ -33,22 +36,16 @@ def scrapData(url):
         return False
     for table_row in table.findAll('tr'):
         columns = table_row.findAll('td')
-        output_row = []
-        for i in range(len(columns)):
-            if i == 2: #3-я колонка на сайте - адресс
-                coord = convertAdrToCoord(columns[i].text)
-                if (coord != -1): #если есть координаты
-                    output_row += coord
-                else:
-                    output_row = []
-                    break
-            else:
-                output_row.append(columns[i].text)
-        if not '—' in output_row and output_row != []: #если в строке пропуск, то она повреждена
-            output_row = output_row[2:] #удаляем колонку с городом и индексом
-            del(output_row[-2]) #удаляем лишнюю колонку (в ней находится год постройки)
-            for t in output_row:
-                f.write(str(t)+';')
+        row = {'lat' : 0, 'lon' : 0, 'pop' : 0}
+        try:
+            coord = convertAdrToCoord(columns[2].text)
+            row['lat'] = str(coord[0])
+            row['lon'] = str(coord[1])
+            row['pop'] = str(getPopulation(float(columns[-3].text), float(columns[-1].text)))
+        except:
+            row = []
+        if row != []:
+            f.write(';'.join([row['lat'], row['lon'], row['pop']]))
             f.write('\n')
     return True
 
